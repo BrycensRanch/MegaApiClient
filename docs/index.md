@@ -14,7 +14,7 @@ Getting started with MegaApiClient
 
 #### Compatibility
 
-The library is built for the following targets: .NET 4.0, .NET 4.5, .NET 4.6, .NET 4.7, .NET 4.7.1, .NET Standard 1.3 and .NET Standard 2.0.
+The library is built for the following targets: .NET 8, .NET 9.
 Here is the list of all supported implementations:
 
 | Implementation             | Version   |

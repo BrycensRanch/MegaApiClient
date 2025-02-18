@@ -1,6 +1,7 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿using System.Text.Json.Serialization;
+
+namespace CG.Web.MegaApiClient.Serialization
 {
-  using Newtonsoft.Json;
 
   internal class GetDownloadLinkRequest : RequestBase
   {
@@ -10,7 +11,7 @@
       Id = node.Id;
     }
 
-    [JsonProperty("n")]
+    [JsonPropertyName("n")]
     public string Id { get; private set; }
   }
 }

@@ -1,4 +1,5 @@
-﻿namespace CG.Web.MegaApiClient
+﻿
+namespace CG.Web.MegaApiClient
 {
   using System;
   using System.Collections.Generic;
@@ -7,8 +8,8 @@
   using System.Runtime.Serialization;
   using System.Text.RegularExpressions;
   using Cryptography;
-  using Newtonsoft.Json;
   using Serialization;
+  using System.Text.Json.Serialization;
 
   [DebuggerDisplay("Node - Type: {Type} - Name: {Name} - Id: {Id}")]
   internal class Node : INode, INodeCrypto
@@ -41,13 +42,13 @@
     [JsonIgnore]
     public string Name => Attributes?.Name;
 
-    [JsonProperty("s")]
+    [JsonPropertyName("s")]
     public long Size { get; private set; }
 
-    [JsonProperty("t")]
+    [JsonPropertyName("t")]
     public NodeType Type { get; private set; }
 
-    [JsonProperty("h")]
+    [JsonPropertyName("h")]
     public string Id { get; private set; }
 
     [JsonIgnore]
@@ -59,22 +60,22 @@
     [JsonIgnore]
     public Attributes Attributes { get; private set; }
 
-    [JsonProperty("p")]
+    [JsonPropertyName("p")]
     public string ParentId { get; private set; }
 
     [JsonIgnore]
     public DateTime? CreationDate { get; private set; }
 
-    [JsonProperty("u")]
+    [JsonPropertyName("u")]
     public string Owner { get; private set; }
 
     [JsonIgnore]
     public IFileAttribute[] FileAttributes { get; private set; }
 
-    [JsonProperty("su")]
+    [JsonPropertyName("su")]
     internal string SharingId { get; private set; }
 
-    [JsonProperty("sk")]
+    [JsonPropertyName("sk")]
     internal string SharingKey { get; private set; }
 
     [JsonIgnore]
@@ -103,16 +104,16 @@
 
     #region Deserialization
 
-    [JsonProperty("ts")]
+    [JsonPropertyName("ts")]
     private long SerializedCreationDate { get; set; }
 
-    [JsonProperty("a")]
+    [JsonPropertyName("a")]
     private string SerializedAttributes { get; set; }
 
-    [JsonProperty("k")]
+    [JsonPropertyName("k")]
     internal string SerializedKey { get; private set; }
 
-    [JsonProperty("fa")]
+    [JsonPropertyName("fa")]
     private string SerializedFileAttributes { get; set; }
 
     [OnDeserialized]

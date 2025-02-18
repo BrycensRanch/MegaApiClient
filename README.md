@@ -10,10 +10,7 @@ MegaApiClient
 ---
 
 > [!IMPORTANT]
-> **MegaApiClient is now in passive maintenance mode; I will no longer be actively maintaining it.**
-> 
-> This project began as a proof of concept to access the MegaUpload API several years ago, but I have never personally used it. Over the past years, I have dedicated a lot of energy to maintaining MegaApiClient for the community. However, I have reached a point where I lack the time and have different priorities. MegaApiClient will remain on GitHub and NuGet, and pull requests are welcome, but I do not plan to actively fix issues or add features.
-> [(more)](https://github.com/gpailler/MegaApiClient/issues/242)
+> This is a fork of MegaAPIClient for modern .NET that uses System.Text.Json instead of Newtonsoft.Json
 
 ---
 

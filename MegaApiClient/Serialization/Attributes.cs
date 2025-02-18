@@ -1,10 +1,11 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿using System.Text.Json.Serialization;
+
+namespace CG.Web.MegaApiClient.Serialization
 {
   using System;
   using System.IO;
   using System.Runtime.Serialization;
   using DamienG.Security.Cryptography;
-  using Newtonsoft.Json;
 
   internal class Attributes
   {
@@ -50,10 +51,11 @@
       }
     }
 
-    [JsonProperty("n")]
+    [JsonPropertyName("n")]
     public string Name { get; set; }
 
-    [JsonProperty("c", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    [JsonPropertyName("c")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
     public string SerializedFingerprint { get; set; }
 
     [JsonIgnore]

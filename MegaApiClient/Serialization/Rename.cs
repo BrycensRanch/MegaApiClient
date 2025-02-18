@@ -1,6 +1,7 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿
+namespace CG.Web.MegaApiClient.Serialization
 {
-  using Newtonsoft.Json;
+  using System.Text.Json.Serialization;
 
   internal class RenameRequest : RequestBase
   {
@@ -11,10 +12,10 @@
       SerializedAttributes = attributes;
     }
 
-    [JsonProperty("n")]
+    [JsonPropertyName("n")]
     public string Id { get; private set; }
 
-    [JsonProperty("attr")]
+    [JsonPropertyName("attr")]
     public string SerializedAttributes { get; set; }
   }
 }

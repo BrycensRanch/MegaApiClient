@@ -1,4 +1,7 @@
-﻿namespace CG.Web.MegaApiClient
+﻿using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace CG.Web.MegaApiClient
 {
   using System;
   using System.Collections.Generic;
@@ -11,10 +14,8 @@
 #if !NET40
   using System.Threading.Tasks;
 #endif
-  using CG.Web.MegaApiClient.Cryptography;
+  using Cryptography;
   using Medo.Security.Cryptography;
-  using Newtonsoft.Json;
-  using Newtonsoft.Json.Linq;
   using Serialization;
 
   public partial class MegaApiClient : IMegaApiClient
@@ -1108,57 +1109,83 @@
       }
     }
 
-    private TResponse RequestCore<TResponse>(RequestBase request, byte[] key)
-        where TResponse : class
+private TResponse RequestCore<TResponse>(RequestBase request, byte[] key)
+    where TResponse : class
+{
+    var dataRequest = JsonSerializer.Serialize(new object[] { request });
+    var uri = GenerateUrl(request.QueryArguments);
+    object jsonData = null;
+    var attempt = 0;
+    var apiCode = ApiResultCode.Ok;
+
+    while (_options.ComputeApiRequestRetryWaitDelay(++attempt, out var retryDelay))
     {
-      var dataRequest = JsonConvert.SerializeObject(new object[] { request });
-      var uri = GenerateUrl(request.QueryArguments);
-      object jsonData = null;
-      var attempt = 0;
-      var apiCode = ApiResultCode.Ok;
-      while (_options.ComputeApiRequestRetryWaitDelay(++attempt, out var retryDelay))
-      {
         var dataResult = _webClient.PostRequestJson(uri, dataRequest);
 
-        if (string.IsNullOrEmpty(dataResult)
-          || (jsonData = JsonConvert.DeserializeObject(dataResult)) == null
-          || jsonData is long
-          || jsonData is JArray array && array[0].Type == JTokenType.Integer)
+        if (string.IsNullOrEmpty(dataResult))
         {
-          apiCode = jsonData == null
-            ? ApiResultCode.RequestFailedRetry
-            : jsonData is long
-              ? (ApiResultCode)Enum.ToObject(typeof(ApiResultCode), jsonData)
-              : (ApiResultCode)((JArray)jsonData)[0].Value<int>();
+            apiCode = ApiResultCode.RequestFailedRetry;
+        }
+        else
+        {
+            try
+            {
+                jsonData = JsonSerializer.Deserialize<JsonElement>(dataResult);
 
-          if (apiCode != ApiResultCode.Ok)
-          {
+                if (jsonData is JsonElement element)
+                {
+                    if (element.ValueKind == JsonValueKind.Number)
+                    {
+                        apiCode = (ApiResultCode)element.GetInt64();
+                    }
+                    else if (element.ValueKind == JsonValueKind.Array)
+                    {
+                        var array = element.EnumerateArray().First();
+                        if (array.ValueKind == JsonValueKind.Number)
+                        {
+                            apiCode = (ApiResultCode)array.GetInt32();
+                        }
+                    }
+                }
+            }
+            catch
+            {
+                apiCode = ApiResultCode.RequestFailedRetry;
+            }
+        }
+
+        if (apiCode != ApiResultCode.Ok)
+        {
             ApiRequestFailed?.Invoke(this, new ApiRequestFailedEventArgs(uri, attempt, retryDelay, apiCode, dataResult));
-          }
+        }
 
-          if (apiCode == ApiResultCode.RequestFailedRetry)
-          {
+        if (apiCode == ApiResultCode.RequestFailedRetry)
+        {
             Wait(retryDelay);
             continue;
-          }
+        }
 
-          if (apiCode != ApiResultCode.Ok)
-          {
+        if (apiCode != ApiResultCode.Ok)
+        {
             throw new ApiException(apiCode);
-          }
         }
 
         break;
-      }
-
-      if (apiCode != ApiResultCode.Ok)
-      {
-        throw new ApiException(apiCode);
-      }
-
-      var data = ((JArray)jsonData)[0].ToString();
-      return (typeof(TResponse) == typeof(string)) ? data as TResponse : JsonConvert.DeserializeObject<TResponse>(data, new GetNodesResponseConverter(key));
     }
+
+    if (apiCode != ApiResultCode.Ok)
+    {
+        throw new ApiException(apiCode);
+    }
+
+    var data = ((JsonElement)jsonData)[0].ToString();
+    return typeof(TResponse) == typeof(string)
+        ? data as TResponse
+        : JsonSerializer.Deserialize<TResponse>(data, new JsonSerializerOptions
+        {
+            Converters = { new GetNodesResponseConverter(key) }
+        });
+}
 
     private void Wait(TimeSpan retryDelay)
     {
@@ -1325,25 +1352,25 @@
         MFAKey = mfaKey;
       }
 
-      [JsonProperty]
+      [JsonPropertyName("Email")]
       public string Email { get; private set; }
 
-      [JsonProperty]
+      [JsonPropertyName("Hash")]
       public string Hash { get; private set; }
 
-      [JsonProperty]
+      [JsonPropertyName("PasswordAesKey")]
       public byte[] PasswordAesKey { get; private set; }
 
-      [JsonProperty]
+      [JsonPropertyName("MFAKey")]
       public string MFAKey { get; private set; }
     }
 
     public class LogonSessionToken : IEquatable<LogonSessionToken>
     {
-      [JsonProperty]
+      [JsonPropertyName("SessionId")]
       public string SessionId { get; }
 
-      [JsonProperty]
+      [JsonPropertyName("MasterKey")]
       public byte[] MasterKey { get; }
 
       private LogonSessionToken()

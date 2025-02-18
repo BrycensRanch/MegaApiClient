@@ -1,6 +1,7 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿using System.Text.Json.Serialization;
+
+namespace CG.Web.MegaApiClient.Serialization
 {
-  using Newtonsoft.Json;
 
   internal class DownloadUrlRequest : RequestBase
   {
@@ -15,10 +16,10 @@
       }
     }
 
-    [JsonProperty("g")]
+    [JsonPropertyName("g")]
     public int G => 1;
 
-    [JsonProperty("n")]
+    [JsonPropertyName("n")]
     public string Id { get; private set; }
   }
 
@@ -30,25 +31,25 @@
       Id = id;
     }
 
-    [JsonProperty("g")]
+    [JsonPropertyName("g")]
     public int G => 1;
 
-    [JsonProperty("p")]
+    [JsonPropertyName("p")]
     public string Id { get; private set; }
   }
 
   internal class DownloadUrlResponse
   {
-    [JsonProperty("g")]
+    [JsonPropertyName("g")]
     public string Url { get; private set; }
 
-    [JsonProperty("s")]
+    [JsonPropertyName("s")]
     public long Size { get; private set; }
 
-    [JsonProperty("at")]
+    [JsonPropertyName("at")]
     public string SerializedAttributes { get; set; }
 
-    [JsonProperty("fa")]
+    [JsonPropertyName("fa")]
     public string SerializedFileAttributes { get; set; }
   }
 }

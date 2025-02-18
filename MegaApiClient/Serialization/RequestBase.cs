@@ -1,7 +1,8 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿
+namespace CG.Web.MegaApiClient.Serialization
 {
   using System.Collections.Generic;
-  using Newtonsoft.Json;
+  using System.Text.Json.Serialization;
 
   internal abstract class RequestBase
   {
@@ -11,7 +12,7 @@
       QueryArguments = new Dictionary<string, string>();
     }
 
-    [JsonProperty("a")]
+    [JsonPropertyName("a")]
     public string Action { get; private set; }
 
     [JsonIgnore]

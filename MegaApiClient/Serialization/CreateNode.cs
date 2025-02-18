@@ -1,7 +1,8 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿using System.Text.Json.Serialization;
+
+namespace CG.Web.MegaApiClient.Serialization
 {
   using System;
-  using Newtonsoft.Json;
 
   internal class CreateNodeRequest : RequestBase
   {
@@ -32,13 +33,13 @@
       }
     }
 
-    [JsonProperty("t")]
+    [JsonPropertyName("t")]
     public string ParentId { get; private set; }
 
-    [JsonProperty("cr")]
+    [JsonPropertyName("cr")]
     public ShareData Share { get; private set; }
 
-    [JsonProperty("n")]
+    [JsonPropertyName("n")]
     public CreateNodeRequestData[] Nodes { get; private set; }
 
     public static CreateNodeRequest CreateFileNodeRequest(INode parentNode, string attributes, string encryptedkey, byte[] fileKey, string completionHandle)
@@ -53,16 +54,16 @@
 
     internal class CreateNodeRequestData
     {
-      [JsonProperty("h")]
+      [JsonPropertyName("h")]
       public string CompletionHandle { get; set; }
 
-      [JsonProperty("t")]
+      [JsonPropertyName("t")]
       public NodeType Type { get; set; }
 
-      [JsonProperty("a")]
+      [JsonPropertyName("a")]
       public string Attributes { get; set; }
 
-      [JsonProperty("k")]
+      [JsonPropertyName("k")]
       public string Key { get; set; }
     }
   }

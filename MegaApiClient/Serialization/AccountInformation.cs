@@ -1,9 +1,10 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿using System.Text.Json.Serialization;
+
+namespace CG.Web.MegaApiClient.Serialization
 {
   using System.Collections.Generic;
   using System.Linq;
   using System.Runtime.Serialization;
-  using Newtonsoft.Json;
 
   internal class AccountInformationRequest : RequestBase
   {
@@ -12,25 +13,25 @@
     {
     }
 
-    [JsonProperty("strg")]
+    [JsonPropertyName("strg")]
     public int Storage => 1;
 
-    [JsonProperty("xfer")]
+    [JsonPropertyName("xfer")]
     public int Transfer => 0;
 
-    [JsonProperty("pro")]
+    [JsonPropertyName("pro")]
     public int AccountType => 0;
   }
 
   internal class AccountInformationResponse : IAccountInformation
   {
-    [JsonProperty("mstrg")]
+    [JsonPropertyName("mstrg")]
     public long TotalQuota { get; private set; }
 
-    [JsonProperty("cstrg")]
+    [JsonPropertyName("cstrg")]
     public long UsedQuota { get; private set; }
 
-    [JsonProperty("cstrgn")]
+    [JsonPropertyName("cstrgn")]
     private Dictionary<string, long[]> MetricsSerialized { get; set; }
 
     public IEnumerable<IStorageMetrics> Metrics { get; private set; }

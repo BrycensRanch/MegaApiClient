@@ -1,6 +1,7 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿using System.Text.Json.Serialization;
+
+namespace CG.Web.MegaApiClient.Serialization
 {
-  using Newtonsoft.Json;
 
   internal class PreLoginRequest : RequestBase
   {
@@ -10,16 +11,16 @@
       UserHandle = userHandle;
     }
 
-    [JsonProperty("user")]
+    [JsonPropertyName("user")]
     public string UserHandle { get; private set; }
   }
 
   internal class PreLoginResponse
   {
-    [JsonProperty("s")]
+    [JsonPropertyName("s")]
     public string Salt { get; private set; }
 
-    [JsonProperty("v")]
+    [JsonPropertyName("v")]
     public int Version { get; private set; }
   }
 }

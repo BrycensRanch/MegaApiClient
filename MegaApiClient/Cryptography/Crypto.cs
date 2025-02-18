@@ -1,11 +1,12 @@
-﻿namespace CG.Web.MegaApiClient.Cryptography
+﻿using System.Text.Json;
+
+namespace CG.Web.MegaApiClient.Cryptography
 {
   using System;
   using System.Security.Cryptography;
 
-  using CG.Web.MegaApiClient.Serialization;
+  using Serialization;
 
-  using Newtonsoft.Json;
 
   internal class Crypto
   {
@@ -123,8 +124,7 @@
 
     public static byte[] EncryptAttributes(Attributes attributes, byte[] nodeKey)
     {
-      var data = "MEGA" + JsonConvert.SerializeObject(attributes, Formatting.None);
-      var dataBytes = data.ToBytes();
+      var data = "MEGA" + JsonSerializer.Serialize(attributes, new JsonSerializerOptions { WriteIndented = false });      var dataBytes = data.ToBytes();
       dataBytes = dataBytes.CopySubArray(dataBytes.Length + 16 - (dataBytes.Length % 16));
 
       return EncryptAes(dataBytes, nodeKey);
@@ -144,7 +144,7 @@
           json = json.Substring(0, nullTerminationIndex);
         }
 
-        return JsonConvert.DeserializeObject<Attributes>(json);
+        return JsonSerializer.Deserialize<Attributes>(json);
       }
       catch (Exception ex)
       {

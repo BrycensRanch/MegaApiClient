@@ -1,6 +1,7 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿
+namespace CG.Web.MegaApiClient.Serialization
 {
-  using Newtonsoft.Json;
+  using System.Text.Json.Serialization;
 
   internal class UploadUrlRequest : RequestBase
   {
@@ -10,13 +11,13 @@
       Size = fileSize;
     }
 
-    [JsonProperty("s")]
+    [JsonPropertyName("s")]
     public long Size { get; private set; }
   }
 
   internal class UploadUrlResponse
   {
-    [JsonProperty("p")]
+    [JsonPropertyName("p")]
     public string Url { get; private set; }
   }
 }

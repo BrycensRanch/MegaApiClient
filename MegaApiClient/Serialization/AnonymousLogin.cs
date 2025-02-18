@@ -1,7 +1,7 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
-{
-  using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
+namespace CG.Web.MegaApiClient.Serialization
+{
   internal class AnonymousLoginRequest : RequestBase
   {
     public AnonymousLoginRequest(string masterKey, string temporarySession)
@@ -11,10 +11,10 @@
       TemporarySession = temporarySession;
     }
 
-    [JsonProperty("k")]
+    [JsonPropertyName("k")]
     public string MasterKey { get; set; }
 
-    [JsonProperty("ts")]
+    [JsonPropertyName("ts")]
     public string TemporarySession { get; set; }
   }
 }

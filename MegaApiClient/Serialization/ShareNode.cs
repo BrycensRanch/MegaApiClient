@@ -1,9 +1,10 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿using System.Text.Json.Serialization;
+
+namespace CG.Web.MegaApiClient.Serialization
 {
   using System.Collections.Generic;
   using System.Linq;
-  using CG.Web.MegaApiClient.Cryptography;
-  using Newtonsoft.Json;
+  using Cryptography;
 
   internal class ShareNodeRequest : RequestBase
   {
@@ -57,19 +58,19 @@
       }
     }
 
-    [JsonProperty("n")]
+    [JsonPropertyName("n")]
     public string Id { get; private set; }
 
-    [JsonProperty("ha")]
+    [JsonPropertyName("ha")]
     public string HandleAuth { get; private set; }
 
-    [JsonProperty("s")]
+    [JsonPropertyName("s")]
     public object[] Options { get; private set; }
 
-    [JsonProperty("cr")]
+    [JsonPropertyName("cr")]
     public ShareData Share { get; private set; }
 
-    [JsonProperty("ok")]
+    [JsonPropertyName("ok")]
     public string SharedKey { get; private set; }
   }
 }

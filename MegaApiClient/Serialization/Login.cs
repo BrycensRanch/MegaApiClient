@@ -1,6 +1,7 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿
+namespace CG.Web.MegaApiClient.Serialization
 {
-  using Newtonsoft.Json;
+  using System.Text.Json.Serialization;
 
   internal class LoginRequest : RequestBase
   {
@@ -19,28 +20,28 @@
       MFAKey = mfaKey;
     }
 
-    [JsonProperty("user")]
+    [JsonPropertyName("user")]
     public string UserHandle { get; private set; }
 
-    [JsonProperty("uh")]
+    [JsonPropertyName("uh")]
     public string PasswordHash { get; private set; }
 
-    [JsonProperty("mfa")]
+    [JsonPropertyName("mfa")]
     public string MFAKey { get; private set; }
   }
 
   internal class LoginResponse
   {
-    [JsonProperty("csid")]
+    [JsonPropertyName("csid")]
     public string SessionId { get; private set; }
 
-    [JsonProperty("tsid")]
+    [JsonPropertyName("tsid")]
     public string TemporarySessionId { get; private set; }
 
-    [JsonProperty("privk")]
+    [JsonPropertyName("privk")]
     public string PrivateKey { get; private set; }
 
-    [JsonProperty("k")]
+    [JsonPropertyName("k")]
     public string MasterKey { get; private set; }
   }
 }

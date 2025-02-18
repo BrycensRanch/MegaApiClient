@@ -73,33 +73,10 @@ jobs:
 
       - name: Codecov
         uses: codecov/codecov-action@v2
-
-  doc:
-    name: Documentation 📚
-    needs: [ build ]
-    runs-on: windows-latest
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      - name: Install DocFX
-        run: nuget install docfx.console -Version 2.58.9
-
-      - name: Build documentation
-        run: |
-          ./docfx.console.2.58.9/tools/docfx.exe metadata ./docs/docfx.json
-          ./docfx.console.2.58.9/tools/docfx.exe build ./docs/docfx.json --globalMetadata "{'_appFooter': 'Copyright © 2013-2024 - Gregoire Pailler - MegaApiClient ${{ needs.build.outputs.semVer }}'}"
-          
-      - name: Upload Documentation
-        uses: actions/upload-artifact@v3
-        with:
-          name: Documentation
-          path: ./docs/_site/
-          if-no-files-found: error
-
+        
   deploy:
     name: Deploy 🚀
-    needs: [ build, doc ]
+    needs: [ build ]
     runs-on: windows-latest
     steps:
       - name: Download NuGet packages
@@ -115,7 +92,7 @@ jobs:
 
   deploy-release:
     name: Deploy release 🚀🌐
-    needs: [ build, doc ]
+    needs: [ build ]
     runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     steps:
@@ -148,7 +125,7 @@ jobs:
           files: ./artifacts/*.nupkg
           draft: true
 
-      - name: Publish on NuGet
+      - name: Publish on GitHub Packages
         run: |
           cd ./artifacts/
-          dotnet nuget push *.nupkg --source https://api.nuget.org/v3/index.json --api-key ${{ secrets.NUGET_SECRET }}
+          dotnet nuget push *.nupkg --source "https://nuget.pkg.github.com/BrycensRanch/index.json" --api-key ${{ secrets.GITHUB_TOKEN }}

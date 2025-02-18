@@ -2,10 +2,10 @@
 {
   using System;
   using System.Collections.Generic;
-  using Newtonsoft.Json;
-  using Newtonsoft.Json.Linq;
+  using System.Text.Json;
+  using System.Text.Json.Serialization;
 
-  internal class NodeConverter : JsonConverter
+  internal class NodeConverter : JsonConverter<Node>
   {
     private readonly byte[] _masterKey;
     private List<SharedKey> _sharedKeys;
@@ -16,36 +16,38 @@
       _sharedKeys = sharedKeys;
     }
 
-    public override bool CanConvert(Type objectType)
+    public override Node Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-      return typeof(Node) == objectType;
-    }
-
-    public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-    {
-      if (reader.TokenType == JsonToken.Null)
+      if (reader.TokenType == JsonTokenType.Null)
       {
         return null;
       }
 
-      var jObject = JObject.Load(reader);
-
+      using var doc = JsonDocument.ParseValue(ref reader);
+      var jsonElement = doc.RootElement;
       var target = new Node(_masterKey, ref _sharedKeys);
 
-      var jObjectReader = jObject.CreateReader();
-      jObjectReader.Culture = reader.Culture;
-      jObjectReader.DateFormatString = reader.DateFormatString;
-      jObjectReader.DateParseHandling = reader.DateParseHandling;
-      jObjectReader.DateTimeZoneHandling = reader.DateTimeZoneHandling;
-      jObjectReader.FloatParseHandling = reader.FloatParseHandling;
-      jObjectReader.MaxDepth = reader.MaxDepth;
-      jObjectReader.SupportMultipleContent = reader.SupportMultipleContent;
-      serializer.Populate(jObjectReader, target);
+      foreach (var property in jsonElement.EnumerateObject())
+      {
+        if (property.Name == "sharedKeys")
+        {
+          _sharedKeys = JsonSerializer.Deserialize<List<SharedKey>>(property.Value.GetRawText(), options);
+        }
+        else
+        {
+          var propertyInfo = typeof(Node).GetProperty(property.Name);
+          if (propertyInfo != null)
+          {
+            var value = JsonSerializer.Deserialize(property.Value.GetRawText(), propertyInfo.PropertyType, options);
+            propertyInfo.SetValue(target, value);
+          }
+        }
+      }
 
       return target;
     }
 
-    public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    public override void Write(Utf8JsonWriter writer, Node value, JsonSerializerOptions options)
     {
       throw new NotSupportedException();
     }

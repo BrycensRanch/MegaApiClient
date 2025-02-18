@@ -1,6 +1,7 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿
+namespace CG.Web.MegaApiClient.Serialization
 {
-  using Newtonsoft.Json;
+  using System.Text.Json.Serialization;
 
   internal class MoveRequest : RequestBase
   {
@@ -11,10 +12,10 @@
       DestinationParentId = destinationParentNode.Id;
     }
 
-    [JsonProperty("n")]
+    [JsonPropertyName("n")]
     public string Id { get; private set; }
 
-    [JsonProperty("t")]
+    [JsonPropertyName("t")]
     public string DestinationParentId { get; private set; }
   }
 }

@@ -1,10 +1,11 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
+namespace CG.Web.MegaApiClient.Serialization
 {
   using System.Collections.Generic;
-  using System.Linq;
   using System.Runtime.Serialization;
-  using Newtonsoft.Json;
-  using Newtonsoft.Json.Linq;
 
   internal class GetNodesRequest : RequestBase
   {
@@ -22,10 +23,10 @@
       }
     }
 
-    [JsonProperty("c")]
+    [JsonPropertyName("c")]
     public int C { get; private set; }
 
-    [JsonProperty("r")]
+    [JsonPropertyName("r")]
     public int R { get; private set; }
   }
 
@@ -43,10 +44,10 @@
 
     public Node[] UnsupportedNodes { get; private set; }
 
-    [JsonProperty("f")]
-    public JRaw NodesSerialized { get; private set; }
+    [JsonPropertyName("f")]
+    public JsonElement NodesSerialized { get; private set; }
 
-    [JsonProperty("ok")]
+    [JsonPropertyName("ok")]
     public List<SharedKey> SharedKeys
     {
       get => _sharedKeys;
@@ -56,8 +57,10 @@
     [OnDeserialized]
     public void OnDeserialized(StreamingContext ctx)
     {
-      var tempNodes = JsonConvert.DeserializeObject<Node[]>(NodesSerialized.ToString(), new NodeConverter(_masterKey, ref _sharedKeys));
-
+      var tempNodes = JsonSerializer.Deserialize<Node[]>(NodesSerialized.ToString(), new JsonSerializerOptions
+      {
+        Converters = { new NodeConverter(_masterKey, ref _sharedKeys) }
+      });
       UnsupportedNodes = tempNodes.Where(x => x.EmptyKey).ToArray();
       Nodes = tempNodes.Where(x => !x.EmptyKey).ToArray();
     }

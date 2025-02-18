@@ -1,6 +1,7 @@
-﻿namespace CG.Web.MegaApiClient.Serialization
+﻿using System.Text.Json.Serialization;
+
+namespace CG.Web.MegaApiClient.Serialization
 {
-  using Newtonsoft.Json;
 
   internal class DeleteRequest : RequestBase
   {
@@ -10,7 +11,7 @@
       Node = node.Id;
     }
 
-    [JsonProperty("n")]
+    [JsonPropertyName("n")]
     public string Node { get; private set; }
   }
 }
